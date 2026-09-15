@@ -1,0 +1,72 @@
+<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: auto;">
+  <h1 style="color: #333; text-align: center;">Gestión de Perfumería</h1>
+
+  <!-- NUEVO: BUSCADOR -->
+  <div style="margin-top: 30px; margin-bottom: 10px;">
+    <input type="text" placeholder="Buscar perfume por nombre o marca..." 
+           [(ngModel)]="terminoBusqueda" 
+           style="padding: 12px; width: 100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;">
+  </div>
+
+  <!-- FORMULARIO ACTUALIZADO -->
+  <div style="background-color: #e9ecef; padding: 20px; margin-top: 20px; border-radius: 8px;">
+    <!-- El título cambia automáticamente si estás creando o editando -->
+    <h3 style="margin-top: 0;">{{ nuevoPerfume.id ? 'Editar Perfume' : 'Registrar Nuevo Perfume' }}</h3>
+    
+    <form (ngSubmit)="guardarPerfume()" style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <input type="text" placeholder="Nombre" [(ngModel)]="nuevoPerfume.nombre" name="nombre" required style="padding: 10px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+      <input type="text" placeholder="Marca" [(ngModel)]="nuevoPerfume.marca" name="marca" required style="padding: 10px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+      <input type="text" placeholder="Presentación" [(ngModel)]="nuevoPerfume.presentacion" name="presentacion" style="padding: 10px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+      <input type="number" placeholder="Stock" [(ngModel)]="nuevoPerfume.stock" name="stock" required style="padding: 10px; width: 80px; border: 1px solid #ccc; border-radius: 4px;">
+      <input type="number" placeholder="P. Compra" [(ngModel)]="nuevoPerfume.precioCompra" name="precioCompra" required style="padding: 10px; width: 100px; border: 1px solid #ccc; border-radius: 4px;">
+      <input type="number" placeholder="P. Venta" [(ngModel)]="nuevoPerfume.precioVenta" name="precioVenta" required style="padding: 10px; width: 100px; border: 1px solid #ccc; border-radius: 4px;">
+      
+      <button type="submit" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        Guardar
+      </button>
+
+      <!-- NUEVO: Botón para cancelar la edición y limpiar el formulario -->
+      <button *ngIf="nuevoPerfume.id" type="button" (click)="limpiarFormulario()" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+  <!-- TABLA ACTUALIZADA -->
+  <table style="width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <thead>
+      <tr style="background-color: #0056b3; color: white; text-align: left;">
+        <th style="padding: 12px; border: 1px solid #ddd;">ID</th>
+        <th style="padding: 12px; border: 1px solid #ddd;">Nombre</th>
+        <th style="padding: 12px; border: 1px solid #ddd;">Marca</th>
+        <th style="padding: 12px; border: 1px solid #ddd;">Presentación</th>
+        <th style="padding: 12px; border: 1px solid #ddd;">Stock</th>
+        <th style="padding: 12px; border: 1px solid #ddd;">Precio Compra</th>
+        <th style="padding: 12px; border: 1px solid #ddd;">Precio Venta</th>
+        <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Cambiamos a perfumesFiltrados para que la búsqueda funcione -->
+      <tr *ngFor="let perfume of perfumesFiltrados" style="background-color: #f9f9f9; border-bottom: 1px solid #ddd;">
+        <td style="padding: 12px;">{{ perfume.id }}</td>
+        <td style="padding: 12px; font-weight: bold;">{{ perfume.nombre }}</td>
+        <td style="padding: 12px;">{{ perfume.marca }}</td>
+        <td style="padding: 12px;">{{ perfume.presentacion }}</td>
+        <td style="padding: 12px;">{{ perfume.stock }}</td>
+        <td style="padding: 12px;">S/ {{ perfume.precioCompra }}</td>
+        <td style="padding: 12px;">S/ {{ perfume.precioVenta }}</td>
+        
+        <!-- CELDA CON LOS DOS BOTONES (Editar y Eliminar) -->
+        <td style="padding: 12px; text-align: center; display: flex; gap: 5px; justify-content: center;">
+          <button (click)="cargarParaEditar(perfume)" style="background-color: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            Editar
+          </button>
+          <button (click)="eliminarPerfume(perfume.id)" style="background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
