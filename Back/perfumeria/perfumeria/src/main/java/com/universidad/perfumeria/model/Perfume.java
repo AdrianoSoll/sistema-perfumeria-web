@@ -75,6 +75,4 @@ public class Perfume {
 
     public Perfume() {}
 
-    // IMPORTANTE: Borra los Getters y Setters antiguos en tu IDE 
-    // y genera los nuevos para que incluyan precioCompra y precioVenta.
 }
