@@ -1,0 +1,38 @@
+.nav-principal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1f2937;
+  padding: 15px 30px;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.botones-nav button {
+  background: transparent;
+  color: #9ca3af;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-left: 10px;
+  transition: all 0.3s;
+}
+
+.botones-nav button:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.botones-nav button.activo {
+  background-color: #10b981; /* Verde esmeralda */
+  color: white;
+  font-weight: bold;
+}

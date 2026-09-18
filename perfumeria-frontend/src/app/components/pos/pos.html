@@ -1,0 +1,62 @@
+<div class="pos-container">
+  
+  <!-- PANEL IZQUIERDO: Catálogo de Esencia Fina -->
+  <div class="panel-catalogo">
+    <h2>Fragancias Disponibles</h2>
+    <div class="grid-productos">
+      <!-- Este *ngFor es el que dibuja cada perfume que llegó en el Array -->
+      <div class="card-producto" *ngFor="let perfume of perfumesDisponibles">
+        <div class="info-producto">
+          <h3>{{ perfume.nombre }}</h3>
+          <span class="marca">{{ perfume.marca }}</span>
+          <p class="precio">S/ {{ perfume.precioVenta | number:'1.2-2' }}</p>
+          <p class="stock" [ngStyle]="{'color': perfume.stock === 0 ? 'red' : '#059669'}">
+            Stock: {{ perfume.stock }} u.
+          </p>
+        </div>
+        <button class="btn-agregar" (click)="agregarAlCarrito(perfume)" [disabled]="perfume.stock === 0">
+          Agregar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DERECHO: Carrito y Boleta -->
+  <div class="panel-boleta">
+    <h2>Boleta de Venta</h2>
+    
+    <div class="lista-carrito">
+      <div class="item-carrito" *ngFor="let item of carrito; let i = index">
+        <div class="item-info">
+          <strong>{{ item.cantidad }}x</strong> {{ item.perfume.nombre }}
+        </div>
+        <div class="item-precio">
+          S/ {{ item.subtotal | number:'1.2-2' }}
+          <button class="btn-eliminar" (click)="eliminarDelCarrito(i)">✕</button>
+        </div>
+      </div>
+      <div class="carrito-vacio" *ngIf="carrito.length === 0">
+        Agrega productos para comenzar
+      </div>
+    </div>
+
+    <div class="resumen-pago">
+      <div class="grupo-input">
+        <label>Método de Pago:</label>
+        <select #metodoSelect (change)="metodoPagoSeleccionado = metodoSelect.value" class="select-pago">
+          <option *ngFor="let metodo of metodosPago" [value]="metodo">{{ metodo }}</option>
+        </select>
+      </div>
+      
+      <div class="total-caja">
+        <h3>TOTAL</h3>
+        <h3>S/ {{ totalCalculado | number:'1.2-2' }}</h3>
+      </div>
+      
+      <button class="btn-procesar" (click)="procesarVenta()" [disabled]="carrito.length === 0">
+        Procesar Venta
+      </button>
+    </div>
+  </div>
+  
+</div>

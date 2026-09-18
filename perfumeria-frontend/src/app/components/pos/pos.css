@@ -1,0 +1,165 @@
+.pos-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f3f4f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Panel Izquierdo: Catálogo */
+.panel-catalogo {
+  flex: 2;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.panel-catalogo h2 {
+  margin-top: 0;
+  color: #1f2937;
+}
+
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.card-producto {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-producto h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.marca {
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.precio {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #059669;
+  margin: 10px 0 5px 0;
+}
+
+.stock {
+  font-size: 0.85rem;
+  color: #ef4444;
+  margin-bottom: 15px;
+}
+
+.btn-agregar {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-agregar:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Panel Derecho: Boleta */
+.panel-boleta {
+  flex: 1;
+  background: white;
+  border-left: 2px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-boleta h2 {
+  padding: 20px;
+  margin: 0;
+  background: #1f2937;
+  color: white;
+}
+
+.lista-carrito {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.item-carrito {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.carrito-vacio {
+  text-align: center;
+  color: #9ca3af;
+  margin-top: 50px;
+}
+
+.btn-eliminar {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.resumen-pago {
+  padding: 20px;
+  background: #f9fafb;
+  border-top: 2px solid #e5e7eb;
+}
+
+.grupo-input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.select-pago {
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+}
+
+.total-caja {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.btn-procesar {
+  width: 100%;
+  padding: 15px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-procesar:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}

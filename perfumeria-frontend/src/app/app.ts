@@ -1,32 +1,43 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
-import { FormsModule } from '@angular/forms'; 
-import { PerfumeService, Perfume } from './perfume'; 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
+import { PosComponent } from './components/pos/pos';
+// Importamos tu servicio de perfumes
+import { PerfumeService } from './perfume';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
-  templateUrl: './app.html', 
+  imports: [RouterOutlet, PosComponent, CommonModule, FormsModule],
+  templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
-export class App implements OnInit {
-  perfumes: Perfume[] = [];
+export class AppComponent implements OnInit {
+  title = 'perfumeria-frontend';
+  vistaActual: string = 'pos'; 
+
+  perfumes: any[] = []; 
   
-  nuevoPerfume: Perfume = {
+  nuevoPerfume: any = { 
     nombre: '',
     marca: '',
     presentacion: '',
-    stock: null as any,
-    precioCompra: null as any,
-    precioVenta: null as any
+    stock: null,
+    precioCompra: null,
+    precioVenta: null
   };
 
   terminoBusqueda: string = '';
 
+  // Inyectamos el servicio
   constructor(private perfumeService: PerfumeService) {}
 
   ngOnInit(): void {
+    this.cargarPerfumes();
+  }
+
+  cargarPerfumes(): void {
     this.perfumeService.obtenerPerfumes().subscribe(datos => {
       this.perfumes = datos;
     });
@@ -42,14 +53,14 @@ export class App implements OnInit {
     );
   }
 
-  cargarParaEditar(perfume: Perfume): void {
+  cargarParaEditar(perfume: any): void {
     this.nuevoPerfume = { ...perfume };
   }
 
   guardarPerfume(): void {
     if (this.nuevoPerfume.id) {
       this.perfumeService.actualizarPerfume(this.nuevoPerfume.id, this.nuevoPerfume).subscribe(perfumeActualizado => {
-        const index = this.perfumes.findIndex(p => p.id === perfumeActualizado.id);
+        const index = this.perfumes.findIndex((p: any) => p.id === perfumeActualizado.id);
         if (index !== -1) {
           this.perfumes[index] = perfumeActualizado;
         }
@@ -68,7 +79,7 @@ export class App implements OnInit {
       if(confirm('¿Estás seguro de eliminar este perfume?')) {
         this.perfumeService.eliminarPerfume(id).subscribe({
           next: () => {
-            this.perfumes = this.perfumes.filter(p => p.id !== id);
+            this.perfumes = this.perfumes.filter((p: any) => p.id !== id);
           },
           error: (err) => {
             console.error("Error completo:", err);
@@ -84,9 +95,9 @@ export class App implements OnInit {
       nombre: '',
       marca: '',
       presentacion: '',
-      stock: null as any,
-      precioCompra: null as any,
-      precioVenta: null as any
+      stock: null,
+      precioCompra: null,
+      precioVenta: null
     };
   }
 }
