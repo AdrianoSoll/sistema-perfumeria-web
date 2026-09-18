@@ -1,5 +1,8 @@
 package com.universidad.perfumeria.controller;
 
+import com.universidad.perfumeria.service.VentaPdfService;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import com.universidad.perfumeria.model.DetalleVenta;
 import com.universidad.perfumeria.model.Perfume;
 import com.universidad.perfumeria.model.Venta;
@@ -25,9 +28,30 @@ public class VentaController {
     @Autowired
     private PerfumeRepository perfumeRepository; // Puente para acceder a los datos de los perfumes
 
+    @Autowired
+    private VentaPdfService ventaPdfService;
+
     @GetMapping
     public List<Venta> listarVentas() {
         return ventaRepository.findAll();
+    }
+
+    // Endpoint para filtrar por rango de fechas
+    // Ejemplo de URL: /api/ventas/fechas?inicio=2026-09-17T00:00:00&fin=2026-09-17T23:59:59
+    @GetMapping("/fechas")
+    public ResponseEntity<List<Venta>> obtenerVentasPorFecha(
+            @RequestParam("inicio") LocalDateTime inicio,
+            @RequestParam("fin") LocalDateTime fin) {
+        List<Venta> ventas = ventaRepository.findByFechaBetween(inicio, fin);
+        return ResponseEntity.ok(ventas);
+    }
+
+    // Endpoint para filtrar por método de pago
+    // Ejemplo de URL: /api/ventas/metodo?tipo=Yape
+    @GetMapping("/metodo")
+    public ResponseEntity<List<Venta>> obtenerVentasPorMetodo(@RequestParam("tipo") String tipo) {
+        List<Venta> ventas = ventaRepository.findByMetodoPago(tipo);
+        return ResponseEntity.ok(ventas);
     }
 
     @PostMapping
@@ -74,5 +98,20 @@ public class VentaController {
         Venta ventaGuardada = ventaRepository.save(venta);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(ventaGuardada);
+    }
+
+// Generar y descargar Boleta en PDF
+    @GetMapping("/{id}/pdf")
+    public void descargarBoletaPdf(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        Optional<Venta> ventaOpt = ventaRepository.findById(id);
+        
+        if (ventaOpt.isPresent()) {
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=boleta_" + id + ".pdf");
+            ventaPdfService.generarBoletaPdf(ventaOpt.get(), response);
+        } else {
+            // ¡Aquí lanzamos el error que será capturado por el GlobalExceptionHandler!
+            throw new IllegalArgumentException("La boleta con ID " + id + " no existe en el sistema.");
+        }
     }
 }
