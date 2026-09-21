@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { VentaService, VentaDTO, DetalleVentaDTO } from '../../services/venta';
 import { PerfumeService } from '../../perfume'; 
 
-
 @Component({
   selector: 'app-pos',
   standalone: true,
@@ -75,7 +74,7 @@ export class PosComponent implements OnInit {
   procesarVenta(): void {
     if (this.carrito.length === 0) {
       alert('El carrito está vacío');
-      return;
+      return; 
     }
 
     const detallesVenta: DetalleVentaDTO[] = this.carrito.map(item => ({
@@ -90,13 +89,33 @@ export class PosComponent implements OnInit {
 
     this.ventaService.registrarVenta(nuevaVenta).subscribe({
       next: (respuesta) => {
-        alert(`Venta registrada con éxito. N° Boleta: ${respuesta.id}`);
+        // 1. Limpiamos la pantalla y actualizamos el inventario visualmente
         this.carrito = [];
         this.actualizarTotal();
-        this.cargarCatalogo(); // Recarga el stock actualizado
+        this.cargarCatalogo();
+
+        // 2. Solicitamos el PDF usando el ID generado por el backend
+        this.ventaService.descargarTicketPdf(respuesta.id).subscribe({
+          next: (pdfBlob) => {
+            // Creamos un enlace invisible en memoria para forzar la descarga del PDF
+            const url = window.URL.createObjectURL(pdfBlob);
+            const enlace = document.createElement('a');
+            enlace.href = url;
+            enlace.download = `Boleta_EsenciaFina_N${respuesta.id}.pdf`;
+            enlace.click();
+            window.URL.revokeObjectURL(url); // Limpiamos la memoria
+            
+            alert(`Venta N° ${respuesta.id} procesada exitosamente. Descargando ticket...`);
+          },
+          error: (err) => {
+            console.error("Error al descargar el PDF", err);
+            alert(`Venta ${respuesta.id} registrada, pero hubo un problema al generar el PDF.`);
+          }
+        });
       },
       error: (err) => {
-        alert('Error al procesar la venta');
+        alert('Error al procesar la venta en el servidor');
+        console.error(err);
       }
     });
   }

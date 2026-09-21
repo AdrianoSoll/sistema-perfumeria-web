@@ -27,4 +27,9 @@ export class VentaService {
   obtenerVentas(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  descargarTicketPdf(id: number): Observable<Blob> {
+    // Corregimos la ruta apuntando a /{id}/pdf para coincidir con tu VentaController
+    return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob' });
+  }
 }
