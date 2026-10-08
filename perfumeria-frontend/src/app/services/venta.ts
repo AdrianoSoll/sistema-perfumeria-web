@@ -32,4 +32,9 @@ export class VentaService {
     // Corregimos la ruta apuntando a /{id}/pdf para coincidir con tu VentaController
     return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob' });
   }
+  
+  // Añade este método en VentaService
+  obtenerVentasPorFecha(inicio: string, fin: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/fechas?inicio=${inicio}&fin=${fin}`);
+  }
 }

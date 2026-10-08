@@ -3,12 +3,15 @@
   <div class="logo">Esencia Fina POS</div>
   <div class="botones-nav">
     <button [class.activo]="vistaActual === 'pos'" (click)="vistaActual = 'pos'">
-      Punto de Venta
+      🛒 Punto de Venta
     </button>
     <button [class.activo]="vistaActual === 'inventario'" (click)="vistaActual = 'inventario'">
-      Gestión de Inventario
+      📦 Gestión de Inventario
     </button>
-    <!-- Botón de Cerrar Sesión añadido -->
+    <button [class.activo]="vistaActual === 'reportes'" (click)="vistaActual = 'reportes'">
+      📊 Reportes y Caja
+    </button>
+    <!-- Botón de Cerrar Sesión movido al final -->
     <button class="btn-logout" (click)="logout()">
       🚪 Cerrar Sesión
     </button>
@@ -77,5 +80,9 @@
       </tr>
     </tbody>
   </table>
+</div> <!-- FIN DE LA PANTALLA DE INVENTARIO -->
 
+<!-- PANTALLA 3: Reportes (Fuera del Inventario) -->
+<div *ngIf="vistaActual === 'reportes'">
+  <app-reportes></app-reportes>
 </div>

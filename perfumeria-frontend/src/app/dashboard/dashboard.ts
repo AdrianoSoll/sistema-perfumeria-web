@@ -1,3 +1,4 @@
+import { ReportesComponent } from '../components/reportes/reportes';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { AuthService } from '../services/auth';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [PosComponent, CommonModule, FormsModule],
+  imports: [PosComponent, ReportesComponent, CommonModule, FormsModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })

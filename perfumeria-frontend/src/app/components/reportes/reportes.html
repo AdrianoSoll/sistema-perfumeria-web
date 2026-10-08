@@ -1,0 +1,75 @@
+<div class="reportes-container">
+  <h2>Reportes y Cierre de Caja</h2>
+
+  <!-- Barra de Filtros de Fecha -->
+  <div class="filtros-card">
+    <div class="grupo-filtro">
+      <label>Desde:</label>
+      <input type="date" [(ngModel)]="fechaInicio">
+    </div>
+    <div class="grupo-filtro">
+      <label>Hasta:</label>
+      <input type="date" [(ngModel)]="fechaFin">
+    </div>
+    <div class="acciones-filtro">
+      <button class="btn-filtrar" (click)="filtrarPorFechas()">🔍 Buscar</button>
+      <button class="btn-limpiar" (click)="cargarTodas()">Ver Todas</button>
+    </div>
+  </div>
+
+  <!-- Tarjetas de Cierre de Caja -->
+  <div class="metricas-grid">
+    <div class="metrica-card total">
+      <h3>Ingresos Totales</h3>
+      <p class="numero dinero">S/ {{ totalRecaudado | number:'1.2-2' }}</p>
+      <small>{{ ventas.length }} ventas registradas</small>
+    </div>
+    <div class="metrica-card efectivo">
+      <h3>💵 Efectivo (Caja Física)</h3>
+      <p class="numero">S/ {{ totalEfectivo | number:'1.2-2' }}</p>
+    </div>
+    <div class="metrica-card transferencias">
+      <h3>📱 Yape / Plin</h3>
+      <p class="numero">S/ {{ totalYapePlin | number:'1.2-2' }}</p>
+    </div>
+    <div class="metrica-card tarjetas">
+      <h3>💳 Tarjetas / Trans.</h3>
+      <p class="numero">S/ {{ totalTarjeta | number:'1.2-2' }}</p>
+    </div>
+  </div>
+
+  <!-- Tabla del Historial -->
+  <div class="tabla-container">
+    <table>
+      <thead>
+        <tr>
+          <th>N° Boleta</th>
+          <th>Fecha y Hora</th>
+          <th>Método de Pago</th>
+          <th>Total</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let venta of ventas">
+          <td><strong>#{{ venta.id }}</strong></td>
+          <td>{{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <span class="badge" [ngClass]="venta.metodoPago.toLowerCase()">
+              {{ venta.metodoPago }}
+            </span>
+          </td>
+          <td>S/ {{ venta.total | number:'1.2-2' }}</td>
+          <td>
+            <button class="btn-pdf" (click)="descargarComprobante(venta.id)">
+              📄 PDF
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="ventas.length === 0">
+          <td colspan="5" class="tabla-vacia">No hay ventas registradas en el rango seleccionado.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
