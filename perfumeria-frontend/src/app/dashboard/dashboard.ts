@@ -16,7 +16,6 @@ import { AuthService } from '../services/auth';
 })
 export class DashboardComponent implements OnInit {
   vistaActual: string = 'pos'; 
-
   perfumes: any[] = []; 
   
   nuevoPerfume: any = { 
@@ -29,6 +28,9 @@ export class DashboardComponent implements OnInit {
   };
 
   terminoBusqueda: string = '';
+  
+  // NUEVO: Variable para almacenar el rol del usuario actual
+  rolUsuario: string = '';
 
   constructor(
     private perfumeService: PerfumeService,
@@ -37,12 +39,20 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // NUEVO: Leemos el rol guardado en el login
+    this.rolUsuario = localStorage.getItem('rol') || '';
+    
     this.cargarPerfumes();
   }
 
-  // Método requerido por el botón de dashboard.html:
+  // NUEVO: Función para determinar si el usuario es administrador
+  get esAdmin(): boolean {
+    return this.rolUsuario === 'ROLE_ADMIN' || this.rolUsuario === 'ADMIN'; 
+  }
+
   logout(): void {
     this.authService.cerrarSesion();
+    localStorage.removeItem('rol'); // NUEVO: Limpiamos el rol al salir
     this.router.navigate(['/login']);
   }
 

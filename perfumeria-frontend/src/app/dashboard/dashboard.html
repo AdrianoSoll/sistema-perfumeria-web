@@ -2,16 +2,22 @@
 <nav class="nav-principal">
   <div class="logo">Esencia Fina POS</div>
   <div class="botones-nav">
+    <!-- El POS lo ven TODOS (cajero y admin) -->
     <button [class.activo]="vistaActual === 'pos'" (click)="vistaActual = 'pos'">
       🛒 Punto de Venta
     </button>
-    <button [class.activo]="vistaActual === 'inventario'" (click)="vistaActual = 'inventario'">
+    
+    <!-- Inventario SOLO lo ve el ADMIN (*ngIf="esAdmin") -->
+    <button *ngIf="esAdmin" [class.activo]="vistaActual === 'inventario'" (click)="vistaActual = 'inventario'">
       📦 Gestión de Inventario
     </button>
-    <button [class.activo]="vistaActual === 'reportes'" (click)="vistaActual = 'reportes'">
+    
+    <!-- Reportes SOLO lo ve el ADMIN (*ngIf="esAdmin") -->
+    <button *ngIf="esAdmin" [class.activo]="vistaActual === 'reportes'" (click)="vistaActual = 'reportes'">
       📊 Reportes y Caja
     </button>
-    <!-- Botón de Cerrar Sesión movido al final -->
+    
+    <!-- Cerrar sesión lo ven TODOS -->
     <button class="btn-logout" (click)="logout()">
       🚪 Cerrar Sesión
     </button>
