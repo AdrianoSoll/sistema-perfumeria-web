@@ -23,10 +23,10 @@ public class VentaPdfService {
 
         // Título de la Boleta
         Font fontTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, Color.BLACK);
-        Paragraph titulo = new Paragraph("BOLETA DE VENTA - ESENCIA FINA", fontTitulo);
+        Paragraph titulo = new Paragraph("BOLETA DE VENTA", fontTitulo);
         titulo.setAlignment(Element.ALIGN_CENTER);
         document.add(titulo);
-        document.add(new Paragraph(" ")); // Espacio en blanco
+        document.add(new Paragraph(" ")); 
 
         // Datos Generales
         Font fontDatos = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.DARK_GRAY);
