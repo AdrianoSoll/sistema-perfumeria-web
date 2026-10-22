@@ -95,7 +95,7 @@ calcularTotales(): void {
         const url = window.URL.createObjectURL(pdfBlob);
         const enlace = document.createElement('a');
         enlace.href = url;
-        enlace.download = `Boleta_EsenciaFina_N${id}.pdf`;
+        enlace.download = `Comprobante_Venta_N${id}.pdf`;
         enlace.click();
         window.URL.revokeObjectURL(url);
       },

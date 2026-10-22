@@ -1,75 +1,97 @@
-<div class="reportes-container">
-  <h2>Reportes y Cierre de Caja</h2>
+<div class="reportes-wrapper">
+  
+  <header class="reportes-header">
+    <h1 class="view-title">Reportes y Cierre de Caja</h1>
+  </header>
 
   <!-- Barra de Filtros de Fecha -->
-  <div class="filtros-card">
-    <div class="grupo-filtro">
-      <label>Desde:</label>
-      <input type="date" [(ngModel)]="fechaInicio">
-    </div>
-    <div class="grupo-filtro">
-      <label>Hasta:</label>
-      <input type="date" [(ngModel)]="fechaFin">
-    </div>
-    <div class="acciones-filtro">
-      <button class="btn-filtrar" (click)="filtrarPorFechas()">Buscar</button>
-      <button class="btn-limpiar" (click)="cargarTodas()">Ver Todas</button>
+  <div class="card filtros-card">
+    <div class="filtros-container">
+      <div class="grupo-filtro">
+        <label>Desde:</label>
+        <input type="date" [(ngModel)]="fechaInicio" class="input-field">
+      </div>
+      <div class="grupo-filtro">
+        <label>Hasta:</label>
+        <input type="date" [(ngModel)]="fechaFin" class="input-field">
+      </div>
+      <div class="acciones-filtro">
+        <button class="btn-primary" (click)="filtrarPorFechas()">Buscar</button>
+        <button class="btn-secondary" (click)="cargarTodas()">Ver Todas</button>
+      </div>
     </div>
   </div>
 
   <!-- Tarjetas de Cierre de Caja -->
   <div class="metricas-grid">
-    <div class="metrica-card total">
-      <h3>Ingresos Totales</h3>
+    <div class="card metrica-card total">
+      <div class="metrica-header">
+        <h3>Ingresos Totales</h3>
+      </div>
       <p class="numero dinero">S/ {{ totalRecaudado | number:'1.2-2' }}</p>
       <small>{{ ventas.length }} ventas registradas</small>
     </div>
-    <div class="metrica-card efectivo">
-      <h3>Efectivo (Caja Física)</h3>
+    
+    <div class="card metrica-card efectivo">
+      <div class="metrica-header">
+        <h3>Efectivo (Caja)</h3>
+      </div>
       <p class="numero">S/ {{ totalEfectivo | number:'1.2-2' }}</p>
     </div>
-    <div class="metrica-card transferencias">
-      <h3>Yape / Plin</h3>
+    
+    <div class="card metrica-card transferencias">
+      <div class="metrica-header">
+        <h3>Yape / Plin</h3>
+      </div>
       <p class="numero">S/ {{ totalYapePlin | number:'1.2-2' }}</p>
     </div>
-    <div class="metrica-card tarjetas">
-      <h3>Tarjetas / Transf.</h3>
+    
+    <div class="card metrica-card tarjetas">
+      <div class="metrica-header">
+        <h3>Tarjetas / Transf.</h3>
+      </div>
       <p class="numero">S/ {{ totalTarjeta | number:'1.2-2' }}</p>
     </div>
   </div>
 
   <!-- Tabla del Historial -->
-  <div class="tabla-container">
-    <table>
-      <thead>
-        <tr>
-          <th>N° Boleta</th>
-          <th>Fecha y Hora</th>
-          <th>Método de Pago</th>
-          <th>Total</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let venta of ventas">
-          <td><strong>#{{ venta.id }}</strong></td>
-          <td>{{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td>
-            <span class="badge" [ngClass]="venta.metodoPago.toLowerCase()">
-              {{ venta.metodoPago }}
-            </span>
-          </td>
-          <td>S/ {{ venta.total | number:'1.2-2' }}</td>
-          <td>
-            <button class="btn-pdf" (click)="descargarComprobante(venta.id)">
-              PDF
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="ventas.length === 0">
-          <td colspan="5" class="tabla-vacia">No hay ventas registradas en el rango seleccionado.</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card table-card">
+    <div class="table-header-action">
+      <h3>Historial de Transacciones</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>N° Boleta</th>
+            <th>Fecha y Hora</th>
+            <th>Método de Pago</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let venta of ventas">
+            <td><strong>#{{ venta.id }}</strong></td>
+            <td>{{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <span class="badge" [ngClass]="venta.metodoPago?.toLowerCase()">
+                {{ venta.metodoPago }}
+              </span>
+            </td>
+            <td class="font-bold">S/ {{ venta.total | number:'1.2-2' }}</td>
+            <td>
+              <button class="btn-icon btn-pdf" (click)="descargarComprobante(venta.id)" title="Descargar Comprobante">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                PDF
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="ventas.length === 0">
+            <td colspan="5" class="text-center empty-state">No hay ventas registradas en el rango seleccionado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

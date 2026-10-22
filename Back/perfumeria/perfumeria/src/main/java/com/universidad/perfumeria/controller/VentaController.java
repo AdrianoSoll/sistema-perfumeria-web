@@ -1,12 +1,10 @@
 package com.universidad.perfumeria.controller;
 
 import com.universidad.perfumeria.service.VentaPdfService;
+import com.universidad.perfumeria.service.VentaService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import com.universidad.perfumeria.model.DetalleVenta;
-import com.universidad.perfumeria.model.Perfume;
 import com.universidad.perfumeria.model.Venta;
-import com.universidad.perfumeria.repository.PerfumeRepository;
 import com.universidad.perfumeria.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +23,11 @@ public class VentaController {
     @Autowired
     private VentaRepository ventaRepository;
 
+    // Ya no inyectamos el PerfumeRepository aquí, el servicio se encarga de eso.
+    
+    // Inyectamos nuestro nuevo servicio transaccional
     @Autowired
-    private PerfumeRepository perfumeRepository; // Puente para acceder a los datos de los perfumes
+    private VentaService ventaService;
 
     @Autowired
     private VentaPdfService ventaPdfService;
@@ -54,53 +55,23 @@ public class VentaController {
         return ResponseEntity.ok(ventas);
     }
 
+    // EL REGISTRO DE VENTA AHORA ES TRANSACCIONAL A TRAVÉS DEL SERVICIO
     @PostMapping
     public ResponseEntity<?> registrarVenta(@RequestBody Venta venta) {
-        venta.setFecha(LocalDateTime.now());
-        double totalVenta = 0.0;
-
-        if (venta.getDetalles() != null) {
-            for (DetalleVenta detalle : venta.getDetalles()) {
-                // 1. Buscar el perfume real en la base de datos
-                Optional<Perfume> perfumeOpt = perfumeRepository.findById(detalle.getPerfume().getId());
-                
-                if (!perfumeOpt.isPresent()) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body("Error: El perfume con ID " + detalle.getPerfume().getId() + " no existe.");
-                }
-
-                Perfume perfumeReal = perfumeOpt.get();
-
-                // 2. Validar que haya suficiente stock
-                if (perfumeReal.getStock() < detalle.getCantidad()) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("Error: Stock insuficiente para '" + perfumeReal.getNombre() + 
-                                  "'. Stock actual: " + perfumeReal.getStock());
-                }
-
-                // 3. Descontar el stock y guardar la actualización del perfume
-                perfumeReal.setStock(perfumeReal.getStock() - detalle.getCantidad());
-                perfumeRepository.save(perfumeReal);
-
-                // 4. Calcular precios automáticamente desde el backend
-                detalle.setPrecioUnitario(perfumeReal.getPrecioVenta());
-                double subtotal = detalle.getCantidad() * perfumeReal.getPrecioVenta();
-                detalle.setSubtotal(subtotal);
-
-                // 5. Acumular al total de la boleta y enlazar el detalle con la venta
-                totalVenta += subtotal;
-                detalle.setVenta(venta);
-            }
+        try {
+            // El controlador ahora solo delega la responsabilidad al servicio seguro
+            Venta ventaGuardada = ventaService.registrarVenta(venta);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ventaGuardada);
+        } catch (IllegalArgumentException e) {
+            // Si el servicio lanza el error de "Stock insuficiente" o "Perfume no existe"
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            // Cualquier otro error imprevisto (Base de datos caída, etc.)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error procesando la venta: " + e.getMessage());
         }
-
-        // 6. Asignar el total calculado y guardar la venta
-        venta.setTotal(totalVenta);
-        Venta ventaGuardada = ventaRepository.save(venta);
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(ventaGuardada);
     }
 
-// Generar y descargar Boleta en PDF
+    // Generar y descargar Boleta en PDF
     @GetMapping("/{id}/pdf")
     public void descargarBoletaPdf(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Optional<Venta> ventaOpt = ventaRepository.findById(id);
