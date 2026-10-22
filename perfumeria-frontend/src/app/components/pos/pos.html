@@ -1,46 +1,54 @@
-<div class="pos-container">
+<div class="pos-wrapper">
   
-  <!-- PANEL IZQUIERDO: Catálogo de Esencia Fina -->
-  <div class="panel-catalogo">
-    <h2>Fragancias Disponibles</h2>
+  <!-- PANEL IZQUIERDO: Catálogo -->
+  <section class="catalog-panel">
+    <header class="catalog-header">
+      <h2>Catálogo de Productos</h2>
+    </header>
     <div class="grid-productos">
-      <!-- Este *ngFor es el que dibuja cada perfume que llegó en el Array -->
-      <div class="card-producto" *ngFor="let perfume of perfumesDisponibles">
+      <article class="card-producto" *ngFor="let perfume of perfumesDisponibles">
         <div class="info-producto">
-          <h3>{{ perfume.nombre }}</h3>
-          <span class="marca">{{ perfume.marca }}</span>
-          <p class="precio">S/ {{ perfume.precioVenta | number:'1.2-2' }}</p>
-          <p class="stock" [ngStyle]="{'color': perfume.stock === 0 ? 'red' : '#059669'}">
-            Stock: {{ perfume.stock }} u.
-          </p>
+          <h3 class="producto-nombre">{{ perfume.nombre }}</h3>
+          <span class="producto-marca">{{ perfume.marca }}</span>
+          <p class="producto-precio">S/ {{ perfume.precioVenta | number:'1.2-2' }}</p>
+          <div class="producto-stock">
+            <span class="badge" [class.badge-danger]="perfume.stock === 0" [class.badge-success]="perfume.stock > 0">
+              Stock: {{ perfume.stock }} un.
+            </span>
+          </div>
         </div>
         <button class="btn-agregar" (click)="agregarAlCarrito(perfume)" [disabled]="perfume.stock === 0">
-          Agregar
+          <svg *ngIf="perfume.stock > 0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7.354 5.646 8.5 6.793l1.146-1.147a.5.5 0 0 1 .708.708L9.207 7.5l1.147 1.146a.5.5 0 0 1-.708.708L8.5 8.207 7.354 9.354a.5.5 0 1 1-.708-.708L7.793 7.5 6.646 6.354a.5.5 0 1 1 .708-.708z"/></svg>
+          {{ perfume.stock === 0 ? 'Agotado' : 'Agregar' }}
         </button>
-      </div>
+      </article>
     </div>
-  </div>
+  </section>
 
-  <!-- PANEL DERECHO: Carrito y Boleta -->
-  <div class="panel-boleta">
-    <h2>Boleta de Venta</h2>
+  <!-- PANEL DERECHO: Carrito (Ticket) -->
+  <aside class="ticket-panel">
+    <header class="ticket-header">
+      <h2>Boleta de Venta</h2>
+    </header>
     
-    <div class="lista-carrito">
+    <div class="ticket-items">
       <div class="item-carrito" *ngFor="let item of carrito; let i = index">
         <div class="item-info">
-          <strong>{{ item.cantidad }}x</strong> {{ item.perfume.nombre }}
+          <span class="item-qty">{{ item.cantidad }}x</span> 
+          <span class="item-name">{{ item.perfume.nombre }}</span>
         </div>
-        <div class="item-precio">
-          S/ {{ item.subtotal | number:'1.2-2' }}
-          <button class="btn-eliminar" (click)="eliminarDelCarrito(i)">✕</button>
+        <div class="item-actions">
+          <span class="item-price">S/ {{ item.subtotal | number:'1.2-2' }}</span>
+          <button class="btn-eliminar" (click)="eliminarDelCarrito(i)" title="Quitar">✕</button>
         </div>
       </div>
       <div class="carrito-vacio" *ngIf="carrito.length === 0">
-        Agrega productos para comenzar
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/></svg>
+        <p>Agrega productos para comenzar</p>
       </div>
     </div>
 
-    <div class="resumen-pago">
+    <div class="ticket-summary">
       <div class="grupo-input">
         <label>Método de Pago:</label>
         <select #metodoSelect (change)="metodoPagoSeleccionado = metodoSelect.value" class="select-pago">
@@ -49,14 +57,14 @@
       </div>
       
       <div class="total-caja">
-        <h3>TOTAL</h3>
-        <h3>S/ {{ totalCalculado | number:'1.2-2' }}</h3>
+        <span>TOTAL</span>
+        <span>S/ {{ totalCalculado | number:'1.2-2' }}</span>
       </div>
       
       <button class="btn-procesar" (click)="procesarVenta()" [disabled]="carrito.length === 0">
         Procesar Venta
       </button>
     </div>
-  </div>
+  </aside>
   
 </div>
