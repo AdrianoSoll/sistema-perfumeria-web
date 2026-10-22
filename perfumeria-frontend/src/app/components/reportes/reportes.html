@@ -12,7 +12,7 @@
       <input type="date" [(ngModel)]="fechaFin">
     </div>
     <div class="acciones-filtro">
-      <button class="btn-filtrar" (click)="filtrarPorFechas()">🔍 Buscar</button>
+      <button class="btn-filtrar" (click)="filtrarPorFechas()">Buscar</button>
       <button class="btn-limpiar" (click)="cargarTodas()">Ver Todas</button>
     </div>
   </div>
@@ -25,15 +25,15 @@
       <small>{{ ventas.length }} ventas registradas</small>
     </div>
     <div class="metrica-card efectivo">
-      <h3>💵 Efectivo (Caja Física)</h3>
+      <h3>Efectivo (Caja Física)</h3>
       <p class="numero">S/ {{ totalEfectivo | number:'1.2-2' }}</p>
     </div>
     <div class="metrica-card transferencias">
-      <h3>📱 Yape / Plin</h3>
+      <h3>Yape / Plin</h3>
       <p class="numero">S/ {{ totalYapePlin | number:'1.2-2' }}</p>
     </div>
     <div class="metrica-card tarjetas">
-      <h3>💳 Tarjetas / Transf.</h3>
+      <h3>Tarjetas / Transf.</h3>
       <p class="numero">S/ {{ totalTarjeta | number:'1.2-2' }}</p>
     </div>
   </div>
@@ -62,7 +62,7 @@
           <td>S/ {{ venta.total | number:'1.2-2' }}</td>
           <td>
             <button class="btn-pdf" (click)="descargarComprobante(venta.id)">
-              📄 PDF
+              PDF
             </button>
           </td>
         </tr>

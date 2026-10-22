@@ -1,36 +1,61 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <h2>Bienvenido</h2>
-      <p>Ingresa tus credenciales para continuar</p>
-    </div>
-
-    <div class="login-form">
-      <div class="form-group">
+<div class="login">
+  <section class="brand">
+    <p class="brand__message">Panel de gestión para tu perfumería.</p>
+  </section>
+ 
+  <main class="panel">
+    <form class="form" [formGroup]="loginForm" (ngSubmit)="iniciarSesion()" novalidate>
+      <h1 class="form__title">Inicia sesión</h1>
+      <p class="form__hint">Ingresa con tu usuario y contraseña del sistema.</p>
+ 
+      <div class="field">
         <label for="username">Usuario</label>
-        <input 
-          type="text" 
-          id="username" 
-          name="username" 
-          placeholder="Ej: admin" 
-          [(ngModel)]="credenciales.username">
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          placeholder="Ej: admin"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          [class.input-error]="f['username'].invalid && f['username'].touched">
+        <!-- Mensaje de error dinámico -->
+        <small class="text-danger" *ngIf="f['username'].invalid && f['username'].touched">
+          El usuario es requerido y no debe tener espacios.
+        </small>
       </div>
-
-      <div class="form-group">
+ 
+      <div class="field">
         <label for="password">Contraseña</label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          placeholder="********" 
-          [(ngModel)]="credenciales.password">
+        <div class="field__password">
+          <input
+            [type]="mostrarPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            placeholder="Tu contraseña"
+            autocomplete="current-password"
+            [class.input-error]="f['password'].invalid && f['password'].touched">
+          <button
+            type="button"
+            class="field__toggle"
+            (click)="mostrarPassword = !mostrarPassword"
+            [attr.aria-pressed]="mostrarPassword">
+            {{ mostrarPassword ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+        <!-- Mensaje de error dinámico -->
+        <small class="text-danger" *ngIf="f['password'].invalid && f['password'].touched">
+          La contraseña es requerida.
+        </small>
       </div>
-
-      <p *ngIf="mensajeError" style="color: red; font-size: 14px; text-align: center;">
+ 
+      <p class="form__error" role="alert" *ngIf="mensajeError">
         {{ mensajeError }}
       </p>
-
-      <button type="button" class="btn-login" (click)="iniciarSesion()">Iniciar Sesión</button>
-    </div>
-  </div>
+ 
+      <button type="submit" class="btn-login" [disabled]="loginForm.invalid || cargando">
+        {{ cargando ? 'Ingresando…' : 'Ingresar' }}
+      </button>
+    </form>
+  </main>
 </div>
