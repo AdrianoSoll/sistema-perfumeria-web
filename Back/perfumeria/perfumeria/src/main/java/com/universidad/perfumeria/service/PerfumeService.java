@@ -3,6 +3,9 @@ package com.universidad.perfumeria.service;
 import com.universidad.perfumeria.model.Perfume;
 import com.universidad.perfumeria.repository.PerfumeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +18,15 @@ public class PerfumeService {
     @Autowired
     private PerfumeRepository perfumeRepository;
 
-    // Obtener todos los perfumes (Gracias a @Where, esto SOLO traerá los activos)
+    // Método original para el POS (trae todos los activos)
     public List<Perfume> obtenerTodosActivos() {
         return perfumeRepository.findAll();
+    }
+
+    // NUEVO MÉTODO: Paginación para la tabla de Inventario
+    public Page<Perfume> obtenerTodosPaginados(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return perfumeRepository.findAll(pageable);
     }
 
     public Optional<Perfume> obtenerPorId(Long id) {
@@ -26,7 +35,6 @@ public class PerfumeService {
 
     @Transactional
     public Perfume guardar(Perfume perfume) {
-        // Asegurarnos de que si es nuevo, nazca como activo
         if (perfume.getId() == null) {
             perfume.setActivo(true);
         }
@@ -35,8 +43,6 @@ public class PerfumeService {
 
     @Transactional
     public void eliminar(Long id) {
-        // Al ejecutar deleteById, Spring Data JPA verá la anotación @SQLDelete 
-        // de la entidad y automáticamente ejecutará el UPDATE activo = false.
         perfumeRepository.deleteById(id);
     }
 }

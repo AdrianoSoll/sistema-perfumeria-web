@@ -7,17 +7,12 @@
     </div>
     
     <nav class="sidebar__nav">
-      <!-- El POS lo ven TODOS -->
       <button [class.active]="vistaActual === 'pos'" (click)="vistaActual = 'pos'">
         Punto de Venta
       </button>
-      
-      <!-- Inventario SOLO lo ve el ADMIN -->
       <button *ngIf="esAdmin" [class.active]="vistaActual === 'inventario'" (click)="vistaActual = 'inventario'">
         Inventario
       </button>
-      
-      <!-- Reportes SOLO lo ve el ADMIN -->
       <button *ngIf="esAdmin" [class.active]="vistaActual === 'reportes'" (click)="vistaActual = 'reportes'">
         Reportes y Caja
       </button>
@@ -46,9 +41,9 @@
       <h1 class="view-title">Gestión de Inventario</h1>
 
       <div class="inventory-controls">
-        <!-- Tarjeta de Búsqueda -->
+        <!-- Tarjeta de Búsqueda conectada a aplicarFiltro() -->
         <div class="card search-card">
-          <input type="text" [(ngModel)]="terminoBusqueda" class="input-field" placeholder="Buscar perfume por nombre o marca...">
+          <input type="text" [(ngModel)]="terminoBusqueda" (ngModelChange)="aplicarFiltro()" class="input-field" placeholder="Buscar perfume por nombre o marca...">
         </div>
 
         <!-- Tarjeta de Formulario -->
@@ -71,7 +66,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta de Tabla de Inventario -->
+      <!-- Tarjeta de Tabla de Inventario conectada a perfumesMostrados -->
       <div class="card table-card">
         <div class="table-responsive">
           <table class="modern-table">
@@ -88,7 +83,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let perfume of perfumesFiltrados">
+              <tr *ngFor="let perfume of perfumesMostrados">
                 <td>{{ perfume.id }}</td>
                 <td><strong>{{ perfume.nombre }}</strong></td>
                 <td>{{ perfume.marca }}</td>
@@ -105,15 +100,31 @@
                   <button (click)="eliminarPerfume(perfume.id)" class="btn-icon btn-delete">Eliminar</button>
                 </td>
               </tr>
-              <!-- Mensaje si no hay resultados -->
-              <tr *ngIf="perfumesFiltrados.length === 0">
+              <tr *ngIf="perfumesMostrados.length === 0">
                 <td colspan="8" class="text-center empty-state">No se encontraron perfumes en el inventario.</td>
               </tr>
             </tbody>
           </table>
+
+          <!-- CONTROLES DE PAGINACIÓN conectados a $event -->
+          <div class="pagination-controls" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid #cfc8d6;">
+            <div class="pagination-info" style="color: #675e6e; font-size: 0.85rem;">
+              Mostrando página {{ paginaActual + 1 }} de {{ totalPaginas === 0 ? 1 : totalPaginas }} 
+              (Total: {{ totalElementos }} registros)
+            </div>
+            <div class="pagination-buttons" style="display: flex; gap: 8px;">
+              <button type="button" class="btn-secondary" style="padding: 8px 16px;" (click)="paginaAnterior($event)" [disabled]="paginaActual === 0">
+                Anterior
+              </button>
+              <button type="button" class="btn-secondary" style="padding: 8px 16px;" (click)="paginaSiguiente($event)" [disabled]="paginaActual >= totalPaginas - 1">
+                Siguiente
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div> <!-- FIN PANTALLA INVENTARIO -->
+    </div> 
 
     <!-- PANTALLA 3: Reportes -->
     <div class="view-container fade-in" *ngIf="vistaActual === 'reportes'">

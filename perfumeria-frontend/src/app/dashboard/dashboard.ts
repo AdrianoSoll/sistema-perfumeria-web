@@ -16,7 +16,10 @@ import { AuthService } from '../services/auth';
 })
 export class DashboardComponent implements OnInit {
   vistaActual: string = 'pos'; 
+  
   perfumes: any[] = []; 
+  perfumesPaginados: any[] = []; 
+  perfumesMostrados: any[] = []; // NUEVA VARIABLE EXCLUSIVA PARA LA TABLA
   
   nuevoPerfume: any = { 
     nombre: '',
@@ -29,7 +32,10 @@ export class DashboardComponent implements OnInit {
 
   terminoBusqueda: string = '';
   
-  // NUEVO: Variable para almacenar el rol del usuario actual
+  paginaActual: number = 0;
+  tamanioPagina: number = 5; 
+  totalPaginas: number = 0;
+  totalElementos: number = 0;
   rolUsuario: string = '';
 
   constructor(
@@ -39,20 +45,17 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // NUEVO: Leemos el rol guardado en el login
     this.rolUsuario = localStorage.getItem('rol') || '';
-    
     this.cargarPerfumes();
   }
 
-  // NUEVO: Función para determinar si el usuario es administrador
   get esAdmin(): boolean {
     return this.rolUsuario === 'ROLE_ADMIN' || this.rolUsuario === 'ADMIN'; 
   }
 
   logout(): void {
     this.authService.cerrarSesion();
-    localStorage.removeItem('rol'); // NUEVO: Limpiamos el rol al salir
+    localStorage.removeItem('rol');
     this.router.navigate(['/login']);
   }
 
@@ -60,16 +63,50 @@ export class DashboardComponent implements OnInit {
     this.perfumeService.obtenerPerfumes().subscribe(datos => {
       this.perfumes = datos;
     });
+    this.cargarPaginaInventario(0); // Forzamos empezar en la página 0
   }
 
-  get perfumesFiltrados() {
+  cargarPaginaInventario(pageIndex: number): void {
+    if (pageIndex < 0 || (this.totalPaginas > 0 && pageIndex >= this.totalPaginas)) return;
+    
+    this.perfumeService.obtenerPerfumesPaginados(pageIndex, this.tamanioPagina).subscribe({
+      next: (response) => {
+        this.perfumesPaginados = response.content; 
+        this.paginaActual = response.number;
+        this.totalPaginas = response.totalPages;
+        this.totalElementos = response.totalElements;
+        
+        // Llamamos al filtro para actualizar la tabla visualmente
+        this.aplicarFiltro(); 
+      },
+      error: (err) => console.error('Error al cargar inventario paginado', err)
+    });
+  }
+
+  // NUEVO: Método explícito y ultra rápido para repintar la tabla
+  aplicarFiltro(): void {
     if (!this.terminoBusqueda) {
-      return this.perfumes;
+      // Los tres puntos [...] rompen la referencia de memoria anterior,
+      // obligando a Angular a repintar la tabla instantáneamente.
+      this.perfumesMostrados = [...this.perfumesPaginados];
+    } else {
+      const termino = this.terminoBusqueda.toLowerCase();
+      this.perfumesMostrados = this.perfumesPaginados.filter(perfume => 
+        perfume.nombre.toLowerCase().includes(termino) ||
+        perfume.marca.toLowerCase().includes(termino)
+      );
     }
-    return this.perfumes.filter(perfume => 
-      perfume.nombre.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      perfume.marca.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-    );
+  }
+
+  // NUEVO: Pasamos el evento nativo para cancelar cualquier interferencia
+  paginaSiguiente(event?: Event): void {
+    if (event) event.preventDefault();
+    this.cargarPaginaInventario(this.paginaActual + 1);
+  }
+
+  paginaAnterior(event?: Event): void {
+    if (event) event.preventDefault();
+    this.cargarPaginaInventario(this.paginaActual - 1);
   }
 
   cargarParaEditar(perfume: any): void {
@@ -78,34 +115,29 @@ export class DashboardComponent implements OnInit {
 
   guardarPerfume(): void {
     if (this.nuevoPerfume.id) {
-      this.perfumeService.actualizarPerfume(this.nuevoPerfume.id, this.nuevoPerfume).subscribe(perfumeActualizado => {
-        const index = this.perfumes.findIndex((p: any) => p.id === perfumeActualizado.id);
-        if (index !== -1) {
-          this.perfumes[index] = perfumeActualizado;
-        }
+      this.perfumeService.actualizarPerfume(this.nuevoPerfume.id, this.nuevoPerfume).subscribe(() => {
+        this.cargarPaginaInventario(this.paginaActual); 
         this.limpiarFormulario();
       });
     } else {
-      this.perfumeService.crearPerfume(this.nuevoPerfume).subscribe(perfumeGuardado => {
-        this.perfumes.push(perfumeGuardado);
+      this.perfumeService.crearPerfume(this.nuevoPerfume).subscribe(() => {
+        this.cargarPaginaInventario(0); 
         this.limpiarFormulario();
       });
     }
   }
 
   eliminarPerfume(id: number | undefined): void {
-    if (id !== undefined) {
-      if (confirm('¿Estás seguro de eliminar este perfume?')) {
-        this.perfumeService.eliminarPerfume(id).subscribe({
-          next: () => {
-            this.perfumes = this.perfumes.filter((p: any) => p.id !== id);
-          },
-          error: (err) => {
-            console.error('Error completo:', err);
-            alert('Error al eliminar: ' + err.message);
-          }
-        });
-      }
+    if (id !== undefined && confirm('¿Estás seguro de eliminar este perfume?')) {
+      this.perfumeService.eliminarPerfume(id).subscribe({
+        next: () => {
+          this.cargarPaginaInventario(this.paginaActual); 
+        },
+        error: (err) => {
+          console.error('Error al eliminar:', err);
+          alert('Error al eliminar');
+        }
+      });
     }
   }
 
