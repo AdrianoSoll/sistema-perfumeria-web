@@ -3,12 +3,16 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { jwtInterceptor } from './interceptors/jwt-interceptor';
+// NUEVO: Importaciones para Chart.js
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(
       withInterceptors([jwtInterceptor])
-    )
+    ),
+    // NUEVO: Proveemos Chart.js para que esté disponible globalmente
+    provideCharts(withDefaultRegisterables())
   ]
 };

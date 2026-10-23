@@ -1,0 +1,36 @@
+<div class="stats-container fade-in">
+  <div *ngIf="cargando" class="loading-state text-center" style="padding: 40px; color: #675e6e;">
+    Cargando estadísticas...
+  </div>
+
+  <div *ngIf="!cargando && !hayVentas" class="empty-state text-center" style="padding: 40px; color: #675e6e;">
+    <h3>No hay datos suficientes</h3>
+    <p>Registra algunas ventas para ver los gráficos.</p>
+  </div>
+
+  <div *ngIf="!cargando && hayVentas" class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+    
+    <!-- Tarjeta del Gráfico de Barras -->
+    <div class="card chart-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #cfc8d6;">
+      <div style="height: 300px;">
+        <canvas baseChart
+          [data]="barChartData"
+          [options]="barChartOptions"
+          [type]="barChartType">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Tarjeta del Gráfico Circular -->
+    <div class="card chart-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #cfc8d6;">
+      <div style="height: 300px;">
+        <canvas baseChart
+          [data]="pieChartData"
+          [options]="pieChartOptions"
+          [type]="pieChartType">
+        </canvas>
+      </div>
+    </div>
+
+  </div>
+</div>

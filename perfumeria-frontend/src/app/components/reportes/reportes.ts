@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VentaService } from '../../services/venta';
+// NUEVO: Importar el componente de Estadísticas
+import { EstadisticasComponent } from '../estadisticas/estadisticas';
 
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EstadisticasComponent], // NUEVO: Añadido aquí
   templateUrl: './reportes.html',
   styleUrls: ['./reportes.css']
 })
@@ -26,9 +28,7 @@ export class ReportesComponent implements OnInit {
   constructor(private ventaService: VentaService) {}
 
   ngOnInit(): void {
-    // Por defecto, carga la fecha de HOY
     const hoy = new Date();
-    // Formato YYYY-MM-DD
     const fechaFormat = hoy.toISOString().split('T')[0];
     this.fechaInicio = fechaFormat;
     this.fechaFin = fechaFormat;
@@ -42,7 +42,6 @@ export class ReportesComponent implements OnInit {
       return;
     }
 
-    // Spring Boot espera LocalDateTime con hora: YYYY-MM-DDTHH:mm:ss
     const inicio = `${this.fechaInicio}T00:00:00`;
     const fin = `${this.fechaFin}T23:59:59`;
 
@@ -68,7 +67,7 @@ export class ReportesComponent implements OnInit {
     });
   }
 
-calcularTotales(): void {
+  calcularTotales(): void {
     this.totalRecaudado = 0;
     this.totalEfectivo = 0;
     this.totalYapePlin = 0;
@@ -81,7 +80,6 @@ calcularTotales(): void {
       if (metodo === 'EFECTIVO') {
         this.totalEfectivo += venta.total;
       } else if (metodo === 'YAPE' || metodo === 'PLIN') {
-        // Agrupamos todo el dinero bancario/digital aquí
         this.totalYapePlin += venta.total;
       } else if (metodo === 'TARJETA' || metodo === 'TRANSFERENCIA') {
         this.totalTarjeta += venta.total;

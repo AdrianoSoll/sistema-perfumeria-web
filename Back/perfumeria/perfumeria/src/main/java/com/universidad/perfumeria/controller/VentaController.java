@@ -1,5 +1,6 @@
 package com.universidad.perfumeria.controller;
 
+import com.universidad.perfumeria.controller.dto.EstadisticasDTO; // <-- IMPORTACIÓN NUEVA
 import com.universidad.perfumeria.service.VentaPdfService;
 import com.universidad.perfumeria.service.VentaService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,9 +24,6 @@ public class VentaController {
     @Autowired
     private VentaRepository ventaRepository;
 
-    // Ya no inyectamos el PerfumeRepository aquí, el servicio se encarga de eso.
-    
-    // Inyectamos nuestro nuevo servicio transaccional
     @Autowired
     private VentaService ventaService;
 
@@ -37,8 +35,6 @@ public class VentaController {
         return ventaRepository.findAll();
     }
 
-    // Endpoint para filtrar por rango de fechas
-    // Ejemplo de URL: /api/ventas/fechas?inicio=2026-09-17T00:00:00&fin=2026-09-17T23:59:59
     @GetMapping("/fechas")
     public ResponseEntity<List<Venta>> obtenerVentasPorFecha(
             @RequestParam("inicio") LocalDateTime inicio,
@@ -47,31 +43,30 @@ public class VentaController {
         return ResponseEntity.ok(ventas);
     }
 
-    // Endpoint para filtrar por método de pago
-    // Ejemplo de URL: /api/ventas/metodo?tipo=Yape
     @GetMapping("/metodo")
     public ResponseEntity<List<Venta>> obtenerVentasPorMetodo(@RequestParam("tipo") String tipo) {
         List<Venta> ventas = ventaRepository.findByMetodoPago(tipo);
         return ResponseEntity.ok(ventas);
     }
 
-    // EL REGISTRO DE VENTA AHORA ES TRANSACCIONAL A TRAVÉS DEL SERVICIO
+    // --- NUEVO ENDPOINT PARA GRÁFICOS DEL DASHBOARD ---
+    @GetMapping("/estadisticas")
+    public ResponseEntity<EstadisticasDTO> obtenerEstadisticas() {
+        return ResponseEntity.ok(ventaService.obtenerEstadisticasDashboard());
+    }
+
     @PostMapping
     public ResponseEntity<?> registrarVenta(@RequestBody Venta venta) {
         try {
-            // El controlador ahora solo delega la responsabilidad al servicio seguro
             Venta ventaGuardada = ventaService.registrarVenta(venta);
             return ResponseEntity.status(HttpStatus.CREATED).body(ventaGuardada);
         } catch (IllegalArgumentException e) {
-            // Si el servicio lanza el error de "Stock insuficiente" o "Perfume no existe"
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         } catch (Exception e) {
-            // Cualquier otro error imprevisto (Base de datos caída, etc.)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error procesando la venta: " + e.getMessage());
         }
     }
 
-    // Generar y descargar Boleta en PDF
     @GetMapping("/{id}/pdf")
     public void descargarBoletaPdf(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Optional<Venta> ventaOpt = ventaRepository.findById(id);
@@ -81,7 +76,6 @@ public class VentaController {
             response.setHeader("Content-Disposition", "attachment; filename=boleta_" + id + ".pdf");
             ventaPdfService.generarBoletaPdf(ventaOpt.get(), response);
         } else {
-            // ¡Aquí lanzamos el error que será capturado por el GlobalExceptionHandler!
             throw new IllegalArgumentException("La boleta con ID " + id + " no existe en el sistema.");
         }
     }
