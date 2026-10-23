@@ -47,6 +47,7 @@ public class PerfumeController {
                 .map(perfumeExistente -> {
                     perfumeExistente.setNombre(detallesPerfume.getNombre());
                     perfumeExistente.setMarca(detallesPerfume.getMarca());
+                    perfumeExistente.setCategoria(detallesPerfume.getCategoria()); // <-- AÑADIDO: Actualiza la categoría
                     perfumeExistente.setPresentacion(detallesPerfume.getPresentacion());
                     perfumeExistente.setStock(detallesPerfume.getStock());
                     perfumeExistente.setPrecioCompra(detallesPerfume.getPrecioCompra());

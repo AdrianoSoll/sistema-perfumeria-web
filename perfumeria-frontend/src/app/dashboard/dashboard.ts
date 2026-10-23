@@ -19,11 +19,12 @@ export class DashboardComponent implements OnInit {
   
   perfumes: any[] = []; 
   perfumesPaginados: any[] = []; 
-  perfumesMostrados: any[] = []; // NUEVA VARIABLE EXCLUSIVA PARA LA TABLA
+  perfumesMostrados: any[] = []; 
   
   nuevoPerfume: any = { 
     nombre: '',
     marca: '',
+    categoria: '', // <-- AÑADIDO
     presentacion: '',
     stock: null,
     precioCompra: null,
@@ -63,7 +64,7 @@ export class DashboardComponent implements OnInit {
     this.perfumeService.obtenerPerfumes().subscribe(datos => {
       this.perfumes = datos;
     });
-    this.cargarPaginaInventario(0); // Forzamos empezar en la página 0
+    this.cargarPaginaInventario(0); 
   }
 
   cargarPaginaInventario(pageIndex: number): void {
@@ -76,29 +77,26 @@ export class DashboardComponent implements OnInit {
         this.totalPaginas = response.totalPages;
         this.totalElementos = response.totalElements;
         
-        // Llamamos al filtro para actualizar la tabla visualmente
         this.aplicarFiltro(); 
       },
       error: (err) => console.error('Error al cargar inventario paginado', err)
     });
   }
 
-  // NUEVO: Método explícito y ultra rápido para repintar la tabla
   aplicarFiltro(): void {
     if (!this.terminoBusqueda) {
-      // Los tres puntos [...] rompen la referencia de memoria anterior,
-      // obligando a Angular a repintar la tabla instantáneamente.
       this.perfumesMostrados = [...this.perfumesPaginados];
     } else {
       const termino = this.terminoBusqueda.toLowerCase();
       this.perfumesMostrados = this.perfumesPaginados.filter(perfume => 
         perfume.nombre.toLowerCase().includes(termino) ||
-        perfume.marca.toLowerCase().includes(termino)
+        perfume.marca.toLowerCase().includes(termino) ||
+        // <-- AÑADIDO: Ahora busca también por categoría
+        (perfume.categoria && perfume.categoria.toLowerCase().includes(termino)) 
       );
     }
   }
 
-  // NUEVO: Pasamos el evento nativo para cancelar cualquier interferencia
   paginaSiguiente(event?: Event): void {
     if (event) event.preventDefault();
     this.cargarPaginaInventario(this.paginaActual + 1);
@@ -145,6 +143,7 @@ export class DashboardComponent implements OnInit {
     this.nuevoPerfume = {
       nombre: '',
       marca: '',
+      categoria: '', // <-- AÑADIDO
       presentacion: '',
       stock: null,
       precioCompra: null,

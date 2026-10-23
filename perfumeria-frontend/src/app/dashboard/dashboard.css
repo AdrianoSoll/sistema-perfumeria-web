@@ -272,8 +272,10 @@
 
 /* ---------- ACTION BUTTONS ---------- */
 .action-cells {
-  display: flex;
-  gap: 8px;
+  /* Cambio clave: Quitamos flex y forzamos a que no haya salto de línea */
+  white-space: nowrap; 
+  min-width: 170px;
+  width: 170px;
 }
 
 .btn-icon {
@@ -284,7 +286,14 @@
   cursor: pointer;
   border: none;
   transition: opacity 0.2s;
+  /* Margen añadido para separar los botones */
+  margin-right: 8px;
 }
+
+.btn-icon:last-child {
+  margin-right: 0;
+}
+
 .btn-icon:hover { opacity: 0.8; }
 
 .btn-edit { background: #e0f2fe; color: #0369a1; }
@@ -301,7 +310,6 @@
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

@@ -6,11 +6,12 @@ export interface Perfume {
   id?: number;
   nombre: string;
   marca: string;
+  categoria?: string; // <-- AÑADIDO: Ahora se llama categoria
   presentacion: string;
   stock: number;
   precioCompra: number;
   precioVenta: number;
-  activo?: boolean; // Añadido para el soft delete (opcional en el front)
+  activo?: boolean;
 }
 
 // Nueva interfaz para mapear la respuesta paginada de Spring Boot
