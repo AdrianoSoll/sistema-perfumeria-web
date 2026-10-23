@@ -12,6 +12,14 @@ export interface VentaDTO {
   detalles: DetalleVentaDTO[];
 }
 
+// NUEVO: Interfaz para recibir los datos de los gráficos
+export interface EstadisticasDTO {
+  fechas: string[];
+  totales: number[];
+  perfumes: string[];
+  cantidades: number[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,12 +37,15 @@ export class VentaService {
   }
 
   descargarTicketPdf(id: number): Observable<Blob> {
-    // Corregimos la ruta apuntando a /{id}/pdf para coincidir con tu VentaController
     return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob' });
   }
   
-  // Añade este método en VentaService
   obtenerVentasPorFecha(inicio: string, fin: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/fechas?inicio=${inicio}&fin=${fin}`);
+  }
+
+  // NUEVO MÉTODO: Para pedir las estadísticas de los gráficos
+  obtenerEstadisticas(): Observable<EstadisticasDTO> {
+    return this.http.get<EstadisticasDTO>(`${this.apiUrl}/estadisticas`);
   }
 }
